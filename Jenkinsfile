@@ -11,7 +11,7 @@ podTemplate(
     label: podLabel,
     containers: [
         containerTemplate(name: 'jnlp-docker-nodejs', image: 'jnlp-docker-nodejs', workingDir: workDir, resourceRequestCpu: '2000m', resourceLimitCpu: '2000m', resourceRequestMemory: '2048Mi', resourceLimitMemory: '2048Mi'),
-        containerTemplate(name: 'base-build', image: 'mlrun-ui-pr-tests-runner:0.0.1', workingDir: workDir, ttyEnabled: true, command: 'cat'),
+        containerTemplate(name: 'mlrun-ui-pr-tests-runner', image: 'mlrun-ui-pr-tests-runner:0.0.1', workingDir: workDir, ttyEnabled: true, command: 'cat'),
     ],
     volumes: [
         hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
@@ -19,7 +19,7 @@ podTemplate(
 ) {
     node(podLabel) {
         common.notify_slack {
-            container('jnlp-docker-nodejs') {
+            container('mlrun-ui-pr-tests-runner') {
 
                 stage("git clone") {
                     checkout scm
@@ -41,7 +41,7 @@ podTemplate(
                     withCredentials([
                         string(credentialsId: "iguazio-prod-git-user-token", variable: 'GIT_TOKEN')
                     ]) {
-                        container('jnlp-docker-nodejs') {
+                        container('mlrun-ui-pr-tests-runner') {
                             github.update_release_status(gitProject, gitProjectUser, env.TAG_NAME, GIT_TOKEN)
                         }
                     }
