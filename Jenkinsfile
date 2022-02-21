@@ -10,7 +10,7 @@ dockerTag = env.TAG_NAME.replaceFirst(/^v/, '')
 podTemplate(
     label: podLabel,
     containers: [
-        containerTemplate(name: 'jnlp', image: 'jenkins/jnlp-slave:4.0.1-1', workingDir: workDir, resourceRequestCpu: '2000m', resourceLimitCpu: '2000m', resourceRequestMemory: '2048Mi', resourceLimitMemory: '2048Mi'),
+        containerTemplate(name: 'jnlp-docker-nodejs', image: 'jnlp-docker-nodejs', workingDir: workDir, resourceRequestCpu: '2000m', resourceLimitCpu: '2000m', resourceRequestMemory: '2048Mi', resourceLimitMemory: '2048Mi'),
         containerTemplate(name: 'base-build', image: 'mlrun-ui-pr-tests-runner:0.0.1', workingDir: workDir, ttyEnabled: true, command: 'cat'),
     ],
     volumes: [
@@ -19,7 +19,7 @@ podTemplate(
 ) {
     node(podLabel) {
         common.notify_slack {
-            container('base-build') {
+            container('jnlp-docker-nodejs') {
 
                 stage("git clone") {
                     checkout scm
@@ -41,7 +41,7 @@ podTemplate(
                     withCredentials([
                         string(credentialsId: "iguazio-prod-git-user-token", variable: 'GIT_TOKEN')
                     ]) {
-                        container('jnlp') {
+                        container('jnlp-docker-nodejs') {
                             github.update_release_status(gitProject, gitProjectUser, env.TAG_NAME, GIT_TOKEN)
                         }
                     }
