@@ -11,8 +11,8 @@ prnumber = "${prnumber_split.substring(prnumber_split.lastIndexOf('-') + 1, prnu
 podTemplate(
     label: podLabel,
     containers: [
-        containerTemplate(name: 'jnlp', image: 'jenkins/jnlp-slave:4.0.1-1', workingDir: workDir, resourceRequestCpu: '2000m', resourceLimitCpu: '2000m', resourceRequestMemory: '2048Mi', resourceLimitMemory: '2048Mi'),
-        containerTemplate(name: 'base-build', image: 'centos:7', workingDir: workDir, ttyEnabled: true, command: 'cat'),
+        containerTemplate(name: 'jnlp-docker-nodejs', image: 'jnlp-docker-nodejs', workingDir: workDir, resourceRequestCpu: '2000m', resourceLimitCpu: '2000m', resourceRequestMemory: '2048Mi', resourceLimitMemory: '2048Mi'),
+        containerTemplate(name: 'base-build', image: 'mlrun-ui-pr-tests-runner', workingDir: workDir, ttyEnabled: true, command: 'cat'),
     ],
     volumes: [
         hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),

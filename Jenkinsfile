@@ -10,8 +10,8 @@ dockerTag = env.TAG_NAME.replaceFirst(/^v/, '')
 podTemplate(
     label: podLabel,
     containers: [
-        containerTemplate(name: 'jnlp-docker-nodejs', image: 'jnlp-docker-nodejs', workingDir: workDir, resourceRequestCpu: '2000m', resourceLimitCpu: '2000m', resourceRequestMemory: '2048Mi', resourceLimitMemory: '2048Mi'),
-        containerTemplate(name: 'mlrun-ui-pr-tests-runner', image: 'mlrun-ui-pr-tests-runner:0.0.1', workingDir: workDir, ttyEnabled: true, command: 'cat'),
+        containerTemplate(name: 'jnlp', image: 'jenkins/jnlp-slave:4.0.1-1', workingDir: workDir, resourceRequestCpu: '2000m', resourceLimitCpu: '2000m', resourceRequestMemory: '2048Mi', resourceLimitMemory: '2048Mi'),
+        containerTemplate(name: 'base-build', image: 'iguazioci/alpine-base-build:5540620c8c98efee4debfaa14e4c2a47d7110f22', workingDir: workDir, ttyEnabled: true, command: 'cat'),
     ],
     volumes: [
         hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
@@ -19,7 +19,7 @@ podTemplate(
 ) {
     node(podLabel) {
         common.notify_slack {
-            container('mlrun-ui-pr-tests-runner') {
+            container('base-build') {
 
                 stage("git clone") {
                     checkout scm
@@ -36,12 +36,12 @@ podTemplate(
                                 ]
                     )
                 }
-                
+
                 common.reportStage('update release status') {
                     withCredentials([
                         string(credentialsId: "iguazio-prod-git-user-token", variable: 'GIT_TOKEN')
                     ]) {
-                        container('mlrun-ui-pr-tests-runner') {
+                        container('jnlp') {
                             github.update_release_status(gitProject, gitProjectUser, env.TAG_NAME, GIT_TOKEN)
                         }
                     }
