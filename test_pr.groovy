@@ -28,7 +28,7 @@ podTemplate(
 
                 common.reportStage('Test mlrun/ui PR') {
                     println(common.shellc("docker build -f ./regression.Dockerfile -t regression ."))
-                    println(common.shellc("docker run -it --rm -v $PWD/tests/reports:/mlrun/tests/reports regression sh $PWD/test_pipeline.sh"))
+                    println(common.shellc("docker run -i --rm -v $PWD/tests/reports:/mlrun/tests/reports regression sh $PWD/test_pipeline.sh"))
                 }
                 
                 common.reportStage('update pr status') {
