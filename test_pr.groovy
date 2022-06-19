@@ -12,7 +12,7 @@ podTemplate(
     label: podLabel,
     containers: [
         containerTemplate(name: 'jnlp', image: 'jenkins/jnlp-slave:4.0.1-1', workingDir: workDir, resourceRequestCpu: '2000m', resourceLimitCpu: '2000m', resourceRequestMemory: '2048Mi', resourceLimitMemory: '2048Mi'),
-        containerTemplate(name: 'base-build', image: 'centos:7', workingDir: workDir, ttyEnabled: true, command: 'cat'),
+        containerTemplate(name: 'base-build', image: 'iguazioci/alpine-base-build:5540620c8c98efee4debfaa14e4c2a47d7110f22', workingDir: workDir, ttyEnabled: true, command: 'cat'),
     ],
     volumes: [
         hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
@@ -27,7 +27,8 @@ podTemplate(
                 }
 
                 common.reportStage('Test mlrun/ui PR') {
-                    println(common.shellc(". ./ci_start_ui_tests.sh"))
+                    println(common.shellc("docker build -f ./regression.Dockerfile -t regression ."))
+                    println(common.shellc("docker run -i --rm -v $PWD/tests/reports:/mlrun/tests/reports regression sh ci_start_ui_tests.sh"))
                 }
                 
                 common.reportStage('update pr status') {

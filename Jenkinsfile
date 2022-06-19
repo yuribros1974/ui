@@ -36,7 +36,7 @@ podTemplate(
                                 ]
                     )
                 }
-                
+
                 common.reportStage('update release status') {
                     withCredentials([
                         string(credentialsId: "iguazio-prod-git-user-token", variable: 'GIT_TOKEN')
